@@ -1,0 +1,27 @@
+[user]
+	  name = Alessio Pieruccetti
+	  email = apieruccetti@gmail.com
+[core]
+	  editor = vim
+	  whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+	  excludesfile = ~/.gitignore
+[alias]
+    st = status
+    co = checkout
+    ba = branch -v -a
+    slog = log --pretty=oneline
+    nlog = log --name-status
+    dlog = log -p
+    ci = commit -v
+    br = branch -v
+    history = log --graph --pretty=format:'%Cred%h%Creset %d -%Cblue %s%Creset %Cgreen(%ar) %Cblue<%an>%Creset' --abbrev-commit --date=relative
+    svn-rebase = rebase --interactive --preserve-merges refs/remotes/git-svn
+    diffc = diff --color-words=.
+    diffw = diff --color-words=[a-z]+
+    review = "!sh -c 'git log -p --reverse master..$1' -"
+    review-full = "!sh -c 'git diff master..$1' -"
+    show-merge = "!sh -c 'git log -p --reverse $1^..$1' -"
+    show-merge-full = "!sh -c 'git diff $1^..$1' -"
+    rework = "!sh -c 'git rebase --interactive $(git merge-base $1 HEAD) --autosquash --autostash --preserve-merges' -"
+[push]
+	default = current

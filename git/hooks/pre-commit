@@ -1,0 +1,73 @@
+#!/bin/sh
+#
+
+changedPHPFiles=`git diff --cached --name-only --diff-filter=AM | egrep ".php$"`
+changedPythonFiles=`git diff --cached --name-only --diff-filter=AM | egrep ".py$"`
+
+guidelinesBlockingWarnings=0
+guidelinesBlockingErrors=0
+r=0
+guidelinesOK=0
+syntaxOK=0
+if [ ! -z "$changedPHPFiles" ]
+then
+    # run phpcs and php -l on those files
+    echo "======================================="
+    echo "             RUNNING PHPCS             "
+    echo "======================================="
+    ruleSetFile=`git rev-parse --show-toplevel`/ruleset.xml
+    if [ -f $ruleSetFile ] || [ -h $ruleSetFile ]
+    then
+        standard=$ruleSetFile
+    else
+        standard=psr2
+    fi
+    phpcs --standard=$standard $changedPHPFiles > _pspcsResult
+    guidelinesOK=$?
+    cat _pspcsResult
+    hasWarnings=`egrep '/|\s+WARNING\s+|/' _pspcsResult`
+    hasErrors=`egrep '/|\s+ERROR\s+|/' _pspcsResult`
+    if [ ! -z "$hasWarnings" ] && [ $guidelinesBlockingWarnings -eq 1 ] || [ ! -z "$hasErrors" ] && [ $guidelinesBlockingErrors -eq 1 ]
+    then
+        guidelinesOK=1
+    fi
+    rm _pspcsResult
+
+    echo "======================================="
+    echo "          CHECKING PHP SYNTAX          "
+    echo "======================================="
+    php -l $changedPHPFiles
+    syntaxOK=$?
+fi
+
+if [ ! -z "$changedPythonFiles" ]
+then
+    echo "======================================="
+    echo "             RUNNING pep8              "
+    echo "======================================="
+    pep8 $changedPythonFiles
+    guidelinesOK=$?
+    # no need to change it if it is already failing (from php here)
+    if [ $guidelinesOK -eq 0 ]
+    then
+        guidelinesOK=$?
+    fi
+fi
+
+if [ $guidelinesOK -ne 0 ]
+then
+    >&2 echo "\033[31mYour code does not respect the agreed standards, you should fix it\033[00m"
+
+    if [ $guidelinesBlockingErrors -eq 1 ] || [ $guidelinesBlockingWarnings -eq 1 ]
+    then
+        r=1
+    fi
+fi
+
+if [ $syntaxOK -ne 0 ]
+then
+    >&2 echo "\033[31mPHP Syntax error, please fix it before committing\033[00m"
+    r=1
+fi
+
+exit $r
