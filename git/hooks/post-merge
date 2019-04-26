@@ -1,0 +1,19 @@
+#!/bin/sh
+
+#---------------------------------
+# Delete branch merged into master
+#---------------------------------
+
+# Define your master branch name
+master="master"
+
+currentBranch=$(git branch | grep \* | cut -d ' ' -f2)
+
+if [ $currentBranch = $master ]; then
+    branchToDelete=$(git rev-parse --abbrev-ref $(git show-ref | grep $(git rev-parse HEAD^2)| cut -d ' ' -f 2))
+    if [ $branchToDelete != "" ]; then
+        git branch -d $branchToDelete
+        git push origin :$branchToDelete
+    fi 
+fi
+exit 0
