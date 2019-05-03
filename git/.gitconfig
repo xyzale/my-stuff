@@ -13,6 +13,7 @@
     nlog = log --name-status
     dlog = log -p
     ci = commit -v
+    ca =  commit --amend --no-edit
     br = branch -v
     history = log --graph --pretty=format:'%Cred%h%Creset %d -%Cblue %s%Creset %Cgreen(%ar) %Cblue<%an>%Creset' --abbrev-commit --date=relative
     svn-rebase = rebase --interactive --preserve-merges refs/remotes/git-svn
