@@ -8,10 +8,10 @@
 
 `docker rmi $(docker images -f dangling=true -q)`
 
-#### Remove images according to a pattern
+#### Remove containers according to a pattern
 
 `docker images | grep "pattern" | awk '{print $1}' | xargs docker rm`
 
-#### Remove containers according to a pattern
+#### Remove images according to a pattern
 
 `docker ps -a | grep "pattern" | awk '{print $3}' | xargs docker rmi`
