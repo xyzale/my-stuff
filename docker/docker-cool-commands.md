@@ -10,8 +10,8 @@
 
 #### Remove containers according to a pattern
 
-`docker images | grep "pattern" | awk '{print $1}' | xargs docker rm`
+`docker ps -a | grep "pattern" | awk '{print $1}' | xargs docker rm`
 
 #### Remove images according to a pattern
 
-`docker ps -a | grep "pattern" | awk '{print $3}' | xargs docker rmi`
+`docker images ls | grep "pattern" | awk '{print $3}' | xargs docker rmi`
